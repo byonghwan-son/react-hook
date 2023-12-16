@@ -3,7 +3,7 @@
 - [X] useInput  
 - [X] useTabs
 - [X] useTitle  
-- [ ] useClick  
+- [X] useClick  
 - [ ] usePageLeave  
 - [ ] useFadeIn  
 - [ ] useFullscreen  
