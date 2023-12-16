@@ -1,52 +1,60 @@
-import React, { useState, Component } from "react";
-import "./styles.css";
+import React, { useState, useEffect } from "react";
+import Axios from "axios";
 
-export default App = () => {
-  const [item, setItem] = useState(1);
-  const incrementItem = () => setItem(item + 1);
-  const decrementItem = () => setItem(item - 1);
-  return (
-    <div className="App">
-      <h1>Hello {item}</h1>
-      <button onClick={incrementItem}>Increment</button>
-      <button onClick={decrementItem}>Decrement</button>
-    </div>
-  );
-};
-
-export class LegacyApp extends Component {
-  state = {
-    item: 0,
+// make hooks
+function useInput(defaultValue) {
+  const [value, setValue] = useState(defaultValue);
+  const onChange = (e) => {
+    const {
+      target: { value },
+    } = e;
+    setValue(value);
   };
 
-  incrementItem = () => {
-    this.setState((state) => {
-      return {
-        item: state.item + 1,
-      };
-    });
-  };
-  decrementItem = () => {
-    this.setState((state) => {
-      return {
-        item: state.item - 1,
-      };
-    });
-  };
-
-  render() {
-    const { item } = this.state;
-    // const incrementItem = () => this.setState({ item: item + 1 });
-    // const decrementItem = () => this.setState({ item: item - 1 });
-
-    return (
-      <>
-        <div className="App">
-          <h1>Hello {item}</h1>
-          <button onClick={this.incrementItem}>Increment</button>
-          <button onClick={this.decrementItem}>Decrement</button>
-        </div>
-      </>
-    );
-  }
+  return { value, onChange };
 }
+
+function useFetch(url) {
+  const [payload, setPayload] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const callUrl = async () => {
+    try {
+      setLoading(true);
+      const data = await Axios.get(url);
+      setPayload(data);
+      setLoading(false);
+    } catch (error) {
+      setError(error);
+    } finally {
+    }
+  };
+
+  useEffect(() => {
+    callUrl();
+  }, []);
+
+  return { payload, loading, error };
+}
+
+function App() {
+  const name = useInput("");
+  const { payload, loading, error } = useFetch(
+    "https://api.thecatapi.com/v1/images/search"
+  );
+  return (
+    <>
+      <h1>Use Hooks</h1>
+      <input {...name} placeholder="name?" />
+      <br />
+      {loading && <span>loading user cat</span>}
+      {!loading && error && <span>{error}</span>}
+      {!loading && payload && (
+        <img src={payload.data[0].url} width={200} height={200} />
+      )}
+    </>
+  );
+}
+
+export default App;
