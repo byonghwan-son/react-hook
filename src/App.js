@@ -1,59 +1,54 @@
-import React, { useState, useEffect } from "react";
-import Axios from "axios";
+import React, {useEffect, useRef, useState} from "react";
 
-// make hooks
-function useInput(defaultValue) {
-  const [value, setValue] = useState(defaultValue);
-  const onChange = (e) => {
-    const {
-      target: { value },
-    } = e;
-    setValue(value);
-  };
-
-  return { value, onChange };
-}
-
-function useFetch(url) {
-  const [payload, setPayload] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  const callUrl = async () => {
-    try {
-      setLoading(true);
-      const data = await Axios.get(url);
-      setPayload(data);
-      setLoading(false);
-    } catch (error) {
-      setError(error);
-    } finally {
+const useFullscreen = (runCb) => {
+  const element = useRef()
+  const triggerFull = () => {
+    if(element.current) {
+      if(element.current.requestFullscreen) {
+        element.current.requestFullscreen();
+      } else if(element.current.mozRequestFullscreen) {
+        element.current.mozRequestFullscreen();
+      } else if(element.current.webkitRequestFullscreen) {
+        element.current.webkitRequestFullscreen();
+      } else if(element.current.msRequestFullscreen) {
+        element.current.msRequestFullscreen();
+      }
     }
-  };
-
-  useEffect(() => {
-    callUrl();
-  }, []);
-
-  return { payload, loading, error };
+    if(runCb && typeof runCb === 'function')
+      runCb(true)
+  }
+  const exitFull = () => {
+    if(document.fullscreenElement) {
+      if(document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if(document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+      } else if(document.webkitExitFullScreen) {
+        document.webkitExitFullScreen();
+      } else if(document.msExitFullScreen) {
+        document.msExitFullScreen();
+      }
+    }
+    if(runCb && typeof runCb === 'function')
+      runCb(false)
+  }
+  return {element, triggerFull, exitFull };
 }
 
 function App() {
-  const name = useInput("");
-  const { payload, loading, error } = useFetch(
-    "https://api.thecatapi.com/v1/images/search"
-  );
+  const isFullS = (isFull) => {
+    console.log(isFull ? 'Full Screen' : 'Back to Normal Screen')
+  }
+  const { element, triggerFull, exitFull } = useFullscreen(isFullS)
   return (
-    <>
-      <h1>Use Hooks</h1>
-      <input {...name} placeholder="name?" />
-      <br />
-      {loading && <span>loading user cat</span>}
-      {!loading && error && <span>{error}</span>}
-      {!loading && payload && (
-        <img src={payload.data[0].url} width={200} height={200} />
-      )}
-    </>
+    <div className={'App'}>
+      <div ref={element}>
+        <button onClick={exitFull}>Exit fullscreen</button>
+        <img style={{width: '300px', height: '200px'}}
+             src={`https://i.namu.wiki/i/ROGzx3BkPFtwuJ1OPbuKCasvNHihIgvq2Bxx9gtzGmFHObCda5zRbIamObsd4CXje7tLmpwSqRaiTnbfI1uXiw.webp`}/>
+      </div>
+      <button onClick={triggerFull}>Make fullscreen</button>
+    </div>
   );
 }
 

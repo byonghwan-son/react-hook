@@ -4,13 +4,13 @@
 - [X] useTabs
 - [X] useTitle  
 - [X] useClick  
-- [ ] usePageLeave  
-- [ ] useFadeIn  
-- [ ] useFullscreen  
-- [ ] useHover  
-- [ ] useNetwork
+- [X] useHover  
+- [X] useConfirm
+- [X] usePreventLeave
+- [X] useBeforeLeave  
+- [X] useFadeIn  
+- [X] useNetwork
+- [X] useScroll
+- [X] useFullscreen  
 - [ ] useNotification
-- [ ] useScroll
-- [ ] usePreventLeave
-- [ ] useConfirm
 - [ ] useAxios

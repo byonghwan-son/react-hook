@@ -2,11 +2,10 @@ import { useRef, useEffect } from "react";
 import "./styles.css";
 
 const useClick = (onClick) => {
-  if (typeof onClick !== "function") return;
-  
   const element = useRef();
-  
+
   useEffect(() => {
+    if (typeof onClick !== "function") return;
     // dependency가 없는 상태에서는 componentDidMount의 형태로 아래의 내용을 호출함(딱 한 번만..)
     // 만약 아래의 dependency 배열에 해당 값이 있다면 해당 값이 변경될 때마다 아래의 내용을 호출함.
     // 이것은 componentDidUpdate와 같음.
